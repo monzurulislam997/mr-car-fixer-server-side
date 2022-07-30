@@ -195,3 +195,25 @@ async function connect() {
         const blog = await blogsCollection.findOne({ _id: ObjectId(id) });
         res.send(blog);
     })
+
+    // create payment intent
+    app.post('/create-payment-intent', verifyToken, async (req, res) => {
+        const { price } = req.body;
+        const amount = price * 100;
+        // console.log(amount);
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency: 'usd',
+            payment_method_types: ['card']
+        });
+        res.send({ clientSecret: paymentIntent.client_secret })
+    });
+
+
+
+
+}
+connect().catch(console.dir);
+
+app.get('/', (req, res) => res.send('Hello World!'))
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
