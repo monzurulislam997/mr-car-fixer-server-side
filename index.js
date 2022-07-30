@@ -104,3 +104,40 @@ async function connect() {
         const orders = await ordersCollection.find({ email: email }).sort({ $natural: -1 }).toArray();
         res.send(orders);
     });
+
+    // orders delete api
+    app.delete('/api/orders/:id', verifyToken, verifyAdmin, async (req, res) => {
+        const id = req.params.id;
+        await ordersCollection.deleteOne({ _id: ObjectId(id) });
+        res.send({ success: true });
+    });
+
+
+    // order post api
+    app.post('/api/orders', verifyToken, async (req, res) => {
+        const order = req.body;
+        await ordersCollection.insertOne(order);
+        res.send(order);
+    });
+
+    // user put api
+    app.put('/api/user/:email', async (req, res) => {
+        const email = req.params.email;
+        // console.log(email);
+        const user = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: user,
+        };
+        const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+        const result = await usersCollection.updateOne(filter, updateDoc, options);
+        res.send({ result, token });
+        // res.send(result);
+    })
+
+    //   users get api
+    app.get('/api/users', verifyToken, verifyAdmin, async (req, res) => {
+        const users = await usersCollection.find({}).toArray();
+        res.send(users);
+    });
