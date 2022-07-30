@@ -174,3 +174,24 @@ async function connect() {
         // console.log(isAdmin);
         res.send({ admin: isAdmin })
     })
+
+
+    // newsletter post api
+    app.post('/api/newsletter/:email', async (req, res) => {
+        const email = req.params.email;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const result = await newsletterCollection.findOneAndUpdate(filter, { $set: { email: email } }, options);
+        res.send(result);
+    })
+    // blogs get api
+    app.get('/api/blogs', async (req, res) => {
+        const blogs = await blogsCollection.find({}).toArray();
+        res.send(blogs);
+    })
+    // specific blog get api
+    app.get('/api/blog/:id', async (req, res) => {
+        const id = req.params.id;
+        const blog = await blogsCollection.findOne({ _id: ObjectId(id) });
+        res.send(blog);
+    })
