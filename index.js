@@ -49,7 +49,18 @@ async function connect() {
     const paymentDetailsCollection = client.db('manufacturer').collection('payments');
     const blogsCollection = client.db('manufacturer').collection('blogs');
     const reviewsCollection = client.db('manufacturer').collection('reviews');
-
+    // verify admin
+    const verifyAdmin = async (req, res, next) => {
+        const requester = req.decoded?.email;
+        const requesterAccount = await usersCollection.findOne({ email: requester });
+        // console.log(requesterAccount);
+        if (requesterAccount?.role === 'admin') {
+            next();
+        }
+        else {
+            return res.status(403).send({ success: false, message: 'Forbidden Access' });
+        }
+    }
 
 
 
