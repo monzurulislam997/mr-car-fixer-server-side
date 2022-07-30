@@ -28,3 +28,42 @@ async function connect() {
     const paymentDetailsCollection = client.db('manufacturer').collection('payments');
     const blogsCollection = client.db('manufacturer').collection('blogs');
     const reviewsCollection = client.db('manufacturer').collection('reviews');
+
+
+
+
+    // get api
+    app.get('/api/services', async (req, res) => {
+        const services = await servicesCollection.find({}).sort({ $natural: -1 }).toArray();
+        res.send(services);
+    })
+
+    // get specific services
+    app.get('/api/service/:id', verifyToken, async (req, res) => {
+        const id = req.params.id;
+        const service = await servicesCollection.findOne({ _id: ObjectId(id) });
+        res.send(service);
+    });
+
+    // services insert api
+    app.post('/api/services/', verifyToken, verifyAdmin, async (req, res) => {
+        const service = req.body;
+        const result = await servicesCollection.insertOne(service);
+        res.send(result);
+    });
+
+    // services patch api 
+    app.patch('/api/service/:id', verifyToken, verifyAdmin, async (req, res) => {
+        const id = req.params.id;
+        const service = req.body;
+        await servicesCollection.updateOne({ _id: ObjectId(id) }, { $set: service });
+        res.send(service);
+    });
+
+    // services put api
+    app.put('/api/services/:id', verifyToken, async (req, res) => {
+        const id = req.params.id;
+        const service = req.body;
+        await servicesCollection.updateOne({ _id: ObjectId(id) }, { $set: service });
+        res.send(service);
+    });
