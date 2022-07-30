@@ -141,3 +141,36 @@ async function connect() {
         const users = await usersCollection.find({}).toArray();
         res.send(users);
     });
+
+    // admin put api
+    app.put('/user/admin/:email', verifyToken, verifyAdmin, async (req, res) => {
+        const email = req.params.email;
+        const requester = req.decoded.email;
+        const requesterAccount = await usersCollection.findOne({ email: requester });
+        const filter = { email: email };
+        const updateDoc = { $set: { role: 'admin' } };
+        const result = await usersCollection.updateOne(filter, updateDoc);
+        res.send(result);
+    })
+
+    //   delete user api
+    app.delete('/api/user/:email', verifyToken, verifyAdmin, async (req, res) => {
+        const email = req.params.email;
+        const requester = req.decoded.email;
+        const requesterAccount = await usersCollection.findOne({ email: requester });
+        if (requesterAccount.role === 'admin') {
+            const result = await usersCollection.deleteOne({ email: email });
+            res.send(result);
+        } else {
+            res.send({ success: false, message: 'You are not authorized to delete this user' });
+        }
+    })
+
+    // admin get api
+    app.get('/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = await usersCollection.findOne({ email: email });
+        const isAdmin = user?.role === 'admin';
+        // console.log(isAdmin);
+        res.send({ admin: isAdmin })
+    })
