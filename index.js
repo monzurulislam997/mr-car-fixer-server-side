@@ -81,3 +81,26 @@ async function connect() {
         const orders = await ordersCollection.find({}).sort({ $natural: -1 }).toArray();
         res.send(orders);
     });
+
+    // specific order get api
+    app.get('/api/order/:id', verifyToken, async (req, res) => {
+        const id = req.params.id;
+        const order = await ordersCollection.findOne({ _id: ObjectId(id) });
+        res.send(order);
+    });
+
+    // patch order api
+    app.patch('/api/order/:id', verifyToken, async (req, res) => {
+        const id = req.params.id;
+        const payment = req.body;
+        const result = await ordersCollection.updateOne({ _id: ObjectId(id) }, { $set: { paid: true, transactionId: payment.transactionId } });
+        const paymentsCollection = await paymentDetailsCollection.insertOne(payment);
+        res.send(result);
+    })
+
+    // orders get api with email 
+    app.get('/api/orders/:email', verifyToken, async (req, res) => {
+        const email = req.params.email;
+        const orders = await ordersCollection.find({ email: email }).sort({ $natural: -1 }).toArray();
+        res.send(orders);
+    });
