@@ -10,7 +10,28 @@ app.use(express.json())
 const cors = require('cors')
 app.use(cors())
 
+// stripe--------------- +
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// verify jwt token
+function verifyToken(req, res, next) {
+    const authorization = req.headers?.authorization;
+
+
+    // console.log(authorization);
+    if (!authorization) {
+        return res.status(403).send({ success: false, message: 'Forbidden Access' });
+    }
+    const token = authorization.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ success: false, message: 'Unauthorized access' });
+        }
+        req.decoded = decoded;
+        // console.log(decoded);
+        next();
+    });
+}
 
 
 // mongo client
