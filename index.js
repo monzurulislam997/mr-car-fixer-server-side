@@ -38,6 +38,8 @@ function verifyToken(req, res, next) {
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zo2yn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
 // connect mongodb 
 async function connect() {
     await client.connect() ? console.log('connected') : console.log('not connected');
