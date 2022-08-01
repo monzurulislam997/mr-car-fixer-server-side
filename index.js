@@ -36,7 +36,9 @@ function verifyToken(req, res, next) {
 
 // mongo client
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zo2yn.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.d0czc.mongodb.net/?retryWrites=true&w=majority`;
+console.log(uri)
+// const uri = "mongodb+srv://mr_fixer:<password>@cluster0.d0czc.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
